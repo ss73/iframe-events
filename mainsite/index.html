@@ -1,0 +1,122 @@
+<html>
+<head>
+    <title>Main site</title>
+    
+    <script>
+        function registerEventListener() {
+            window.addEventListener("message", function(arg){
+                console.log("site2", arg);
+                logTextArea = document.getElementById("log");
+                logTextArea.innerHTML += (
+                "Origin: " + arg.origin + "\n" +
+                //"Source: " + arg.source + "\n" +
+                //"Data: " + JSON.stringify(arg.data) + "\n" + 
+                "Topic: " + arg.data.topic + "\n" +
+                "Message: " + arg.data.message + "\n" +
+                "Time: " + new Date(arg.data.time).getTime() + "\n" +
+                "------------------------------------\n");
+                logTextArea.scrollTop = logTextArea.scrollHeight; 
+                sendIntercomEvent(arg.data.topic, arg.data.message);
+            });
+        }
+        
+        function sendIntercomEvent(topic, message) {
+            let payload = {
+                topic: topic,
+                message: message,
+                time: new Date().toISOString(),
+            }
+            
+            let list = Array.from(document.getElementsByTagName("iframe"));
+            console.log(list);
+            list.forEach(element => {
+                //console.log(element);
+                element.contentWindow.postMessage(payload, "*");
+            });
+        }
+    </script>
+    
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    
+    <style>
+        body {
+            font-family: 'Roboto';font-size: 10pt;
+            background-color: #203030;
+            color: white;
+        }
+        textarea {
+            width: calc(100% - 1px);
+            height: 150px;
+        }
+        .subframe {
+            border: 0px outset gray;
+            border-radius: 8px;
+            background-color: lightgray;
+            text-align: center;
+        }
+        .messagebox {
+            padding: 8px;
+            width: calc(100% - 16px);
+            border-radius: 8px;
+            border-color: #405050;
+            border-width: 1px;
+            border-style: outset;
+            background-color: #304040;
+        }
+        #left{
+            float:left;
+            width:calc(50% - 2px);
+            height:50%;
+            overflow:hidden;
+        }
+        #right{
+            float:right;
+            width:calc(50% - 2px);
+            height:50%;
+            overflow:hidden;
+        } 
+        iframe {
+            height: 220px;
+            width: 420px;
+            resize: both;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>I am the main page</h1>
+    <p>
+        There are two subsites included as iframes. All frames are using the <code>postMessage</code>
+        feature in order to send events across different origins. This containing window broadcasts
+        events from any of the children to all other children. Inspect the origin label in the event
+        log to see where the event was submitted from.
+    </p>
+    <h2>Event log</h2>
+    <div class="messagebox">
+        <textarea id="log" rows=10 cols=60></textarea>
+        <br/>
+            <table>
+            <tr><td>Topic</td><td><input type="text" id="topic" value="main"></input></td></tr>
+            <tr><td>Message</td><td><input type="text" id="message" value="buttonClick"></input></td></tr>
+            <tr><td colspan=2 align="right">
+                <button onclick="sendIntercomEvent(
+                document.getElementById('topic').value, 
+                document.getElementById('message').value)">Send event</button>
+            </td></tr>
+        </table>
+     
+    </div>
+    <br/>
+    <div id="left" class="subframe">
+        <iframe src="http://com.example.com:8081/index.html" scrolling="no" frameborder="0"
+        style="position: relative; height: 100%; width: 100%;"></iframe>
+    </div>
+    <div id="right" class="subframe">
+        <iframe src="http://org.example.org:8082/index.html" scrolling="no" frameborder="0"
+        style="position: relative; height: 100%; width: 100%;"></iframe>
+    </div>
+    <script>
+        registerEventListener();
+    </script>
+</body>
+</html>

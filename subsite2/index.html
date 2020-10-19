@@ -1,0 +1,64 @@
+<html>
+<head>
+    <title>Subsite 2</title>
+    <script>
+        function registerEventListener() {
+            window.addEventListener("message", function(arg){
+                console.log("site2", arg);
+                logTextArea = document.getElementById("log");
+                logTextArea.innerHTML += (
+                "Origin: " + arg.origin + "\n" +
+                //"Source: " + arg.source + "\n" +
+                //"Data: " + JSON.stringify(arg.data) + "\n" + 
+                "Topic: " + arg.data.topic + "\n" +
+                "Message: " + arg.data.message + "\n" +
+                "Time: " + new Date(arg.data.time).getTime() + "\n" +
+                "------------------------------------\n");
+                logTextArea.scrollTop = logTextArea.scrollHeight;
+            });
+        }
+        
+        function sendIntercomEvent(topic, message) {
+            let payload = {
+                topic: topic,
+                message: message,
+                time: new Date().toISOString(),
+            }            
+            window.parent.postMessage(payload, '*');
+        }
+        
+    </script>
+    
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    
+    <style>
+        textarea {
+            width: 100%;
+            height: 150px;
+        }
+        body {
+            font-family: 'Roboto';font-size: 10pt;
+            border: 0px solid black;
+            padding: 10px;
+            background-color: lightsalmon;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>I am subsite 2</h1>
+    <p>I am isolated from my parent and siblings</p>
+    
+    <h2>Event log</h2>
+    <textarea id="log" rows=10 cols=48></textarea>
+    <br/>
+    
+    <script>
+        registerEventListener();
+    </script>
+    
+    <button onclick="sendIntercomEvent('subsite2.info', 'button')">Send event</button>
+    
+    
+</body>
+</html>
