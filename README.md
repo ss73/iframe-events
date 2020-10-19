@@ -5,7 +5,7 @@ This is a small technology demonstration that shows how IFrames can communicate 
 ## Setup
 In order to demonstrate content from different origins being able to communicate cross-origin, a couple of DNS records has to be added to the `hosts` file.
 
-Create two new entries in /etc/hosts:
+Create two new entries in `/etc/hosts` (For Windows: `c:\windows\system32\drivers\etc\hosts`):
 ```
 127.0.0.1   com.example.com
 127.0.0.1   org.example.org
